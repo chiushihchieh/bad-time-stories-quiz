@@ -1,4 +1,226 @@
-// === 角色資料：已更新圖片路徑為「角色圖片」===
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>床編故事宇宙角色診斷室</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: '微軟正黑體', sans-serif;
+            background-color: #ffd700; /* 背景黃色 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            position: relative; /* 為了放置懸浮按鈕 */
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 10px 10px 0px rgba(0,0,0,1); /* 黑色硬陰影，更美漫風格 */
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            border: 4px solid #000;
+        }
+        h1 { color: #000; margin-bottom: 5px; font-weight: 900; font-size: 28px; }
+        .subtitle { color: #d32f2f; font-weight: bold; margin-bottom: 30px; font-size: 18px; }
+        
+        /* 懸浮的 YouTube 按鈕 (移出主區塊) */
+        .floating-yt-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ff0000;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            border: 3px solid #000;
+            box-shadow: 3px 3px 0px #000;
+            transition: transform 0.2s;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .floating-yt-btn:hover {
+            transform: scale(1.05);
+            background-color: #cc0000;
+        }
+
+        /* 測驗選項按鈕 */
+        .btn {
+            background-color: #fff;
+            color: #000;
+            border: 3px solid #000;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 5px 5px 0px #aaa;
+            transition: all 0.1s;
+            margin: 10px 0;
+            width: 100%;
+            text-align: left;
+            position: relative;
+        }
+        .btn:hover { background-color: #f0f0f0; transform: translate(-2px, -2px); box-shadow: 7px 7px 0px #aaa; }
+        .btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #333; }
+        
+        .action-btn {
+            background-color: #ff5252;
+            color: white;
+            text-align: center;
+            box-shadow: 4px 4px 0px #000;
+        }
+        .action-btn:hover { background-color: #ff1744; }
+
+        .hidden { display: none; }
+        
+        /* 進度條 */
+        .progress-bar {
+            width: 100%;
+            height: 15px;
+            background-color: #fff;
+            border: 2px solid #000;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #32cd32;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* 結果區塊 (截圖範圍) */
+        #capture-area {
+            background: white;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .result-img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            border: 4px solid #000;
+            margin: 15px auto;
+            background-color: #eee;
+        }
+        /* 隱藏的數值區塊 */
+        .stat-box {
+            display: none; 
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 2px solid #000;
+            text-align: left;
+            font-family: monospace;
+            font-size: 1.1em;
+        }
+        .result-title {
+            font-size: 32px;
+            font-weight: 900;
+            color: #d32f2f;
+            text-shadow: 1px 1px 0px #000;
+            margin: 10px 0;
+        }
+
+        /* 圖片生成後的彈窗 */
+        #generated-image-container {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #generated-image-container img {
+            max-width: 90%;
+            max-height: 80%;
+            border: 5px solid white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .close-btn {
+            color: white;
+            font-size: 18px;
+            margin-top: 15px;
+            cursor: pointer;
+            padding: 10px 20px;
+            background: #333;
+            border-radius: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<a href="https://www.youtube.com/@%E5%BA%8A%E7%B7%A8%E6%95%85%E4%BA%8BBadTimeStories" target="_blank" class="floating-yt-btn">
+    📺 訂閱頻道
+</a>
+
+<div class="container" id="start-screen">
+    <h1>床編故事宇宙<br>角色診斷室</h1>
+    <p class="subtitle">測測看你在床編宇宙裡是誰！</p>
+    
+    <div style="margin: 30px 0;">
+        </div>
+    
+    <button class="btn action-btn" onclick="startQuiz()">🔥 開始診斷 🔥</button>
+</div>
+
+<div class="container hidden" id="quiz-screen">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <h2 id="question-text" style="font-size:1.3em; margin-bottom: 20px;">問題載入中...</h2>
+    <div id="options-container"></div>
+</div>
+
+<div class="container hidden" id="result-screen">
+    <div id="capture-area">
+        <h3 style="margin:0; color:#555;">你的靈魂角色是：</h3>
+        <div class="result-title" id="result-name"></div>
+        
+        <img id="result-image" class="result-img" src="" alt="角色圖片">
+        
+        <p id="result-desc" style="font-size: 1.1em; font-weight: bold; line-height: 1.6; color:#333;"></p>
+        
+        <div class="stat-box">
+            <div>✨ 魅力：<span id="score-charm"></span></div>
+            <div>🧠 智力：<span id="score-intellect"></span></div>
+            <div>😈 心機：<span id="score-scheming"></span></div>
+            <div>🤪 瘋狂：<span id="score-abnormal"></span></div>
+        </div>
+        <p style="margin-top:10px; font-size:0.8em; color:#999;">#床編故事宇宙角色診斷室</p>
+    </div>
+
+    <button class="btn action-btn" onclick="generateImage()" style="background-color: #4CAF50;">📸 產生結果圖 (長按儲存)</button>
+    <button class="btn action-btn" onclick="location.reload()" style="background-color: #607d8b;">🔄 再測一次</button>
+</div>
+
+<div id="generated-image-container">
+    <p style="color: #fff; font-weight: bold; font-size:1.2em;">👇 長按圖片即可儲存 👇</p>
+    <img id="final-image" src="" />
+    <div class="close-btn" onclick="closeImageModal()">關閉視窗</div>
+</div>
+
+<script>
+    // === 角色資料：已更新圖片路徑為「角色圖片」===
     const characters = [
         { name: "小雞汁", stats: [10, 3, 1, 8], desc: "雖然腦袋空空，但這正是你的魅力所在！用拍擊探索這個世界吧！", image: "角色圖片/小雞汁.png" },
         { name: "雞爸", stats: [6, 5, 4, 3], desc: "表面上是個正常人，但內心深處藏著一個狂野的搖滾靈魂 (還有私房錢)", image: "角色圖片/雞爸.png" },
@@ -27,4 +249,199 @@
         { name: "西瓜", stats: [5, 5, 8, 6], desc: "聲音小到像蚊子，但如果仔細聽，會發現你講話超級毒舌。", image: "角色圖片/西瓜.png" },
         { name: "交通安全小尖兵", stats: [4, 2, 9, 7], desc: "為了安全不擇手段，但是保證自己的安全，而不是別人的！", image: "角色圖片/交通安全小尖兵.png" }
     ];
-    //... (其餘程式碼保持不變)
+
+    const questions = [
+        {
+            text: "Q1. 早上起床發現自己變成一隻雞，第一件事做什麼？",
+            options: [
+                { text: "大叫一聲，試試看能不能叫醒鄰居。", value: [3, -1, 0, 2] }, 
+                { text: "照鏡子看自己帥不帥，順便梳毛。", value: [4, 0, 2, 1] }, 
+                { text: "思考這是否為外星人的陰謀，或是輪迴的報應。", value: [0, 4, 1, 1] }, 
+                { text: "不管了，先找看看地上有沒有蟲吃。", value: [-1, -3, 0, 4] } 
+            ]
+        },
+        //... (問題保持不變)
+        {
+            text: "Q2. 走在路上看到地上有一張 1000 元，但是上面沾到了大便...",
+            options: [
+                { text: "這是一種考驗！用華麗的姿勢撿起來洗乾淨。", value: [2, 1, 3, 2] }, 
+                { text: "嫌棄地走開，我可是有潔癖的。", value: [1, 2, 0, -1] }, 
+                { text: "大便？那是什麼？能吃嗎？(撿)", value: [-2, -4, 0, 5] }, 
+                { text: "站在旁邊等別人撿，然後笑他。", value: [0, 2, 4, 3] } 
+            ]
+        },
+        {
+            text: "Q3. 朋友失戀了哭得一把鼻涕一把眼淚，你會？",
+            options: [
+                { text: "陪他一起哭，哭得比他還大聲。", value: [3, -1, 0, 1] }, 
+                { text: "冷靜分析：「根據大數據，下一個會更好。」", value: [-1, 4, 0, 0] }, 
+                { text: "趁機推銷：「剛好我有認識不錯的對象...」收仲介費。", value: [1, 2, 4, 1] }, 
+                { text: "拿手機錄影發限動：「哈哈你看他哭得好醜！」", value: [2, 0, 2, 4] } 
+            ]
+        },
+        {
+            text: "Q4. 假如世界末日只剩下你跟一隻蟑螂活著...",
+            options: [
+                { text: "把蟑螂訓練成我的坐騎，統治世界。", value: [2, 1, 1, 5] }, 
+                { text: "崩潰大叫，直到被蟑螂嚇死。", value: [-1, -2, 0, 2] }, 
+                { text: "跟蟑螂結拜兄弟，畢竟是唯一的依靠了。", value: [3, 0, 0, 3] }, 
+                { text: "立刻踩死它。世界只能由我獨享。", value: [0, 2, 5, 2] } 
+            ]
+        },
+        {
+            text: "Q5. 你的口頭禪比較接近下列哪一句？",
+            options: [
+                { text: "「衝啊！不知道要去哪但先衝再說！」", value: [3, -2, 0, 2] }, 
+                { text: "「哼，愚蠢的人類。」", value: [1, 3, 3, 1] }, 
+                { text: "「好麻煩喔...可以躺著賺嗎？」", value: [0, 1, 2, 2] }, 
+                { text: "「嘿嘿嘿...你的痛苦就是我的快樂。」", value: [-1, 2, 5, 4] } 
+            ]
+        },
+        {
+            text: "Q6. 在公共廁所上大號，發現沒有衛生紙了，你會？",
+            options: [
+                { text: "犧牲內褲。再見了，我的夥伴。", value: [2, 2, 0, 2] }, 
+                { text: "大喊：「救命啊！有沒有人啊！」直到有人來。", value: [0, -2, 0, 3] }, 
+                { text: "用念力祈禱衛生紙出現。(並沒有用)", value: [1, -1, 0, 4] }, 
+                { text: "等待下一個倒楣鬼進來，再勒索他的衛生紙。", value: [-1, 3, 5, 1] } 
+            ]
+        },
+        {
+            text: "Q7. 突然獲得超能力，可以聽到別人的心聲，你最想聽誰的？",
+            options: [
+                { text: "那個看起來很機車的主管。", value: [0, 1, 4, 1] }, 
+                { text: "我家那隻只會睡覺的貓。", value: [4, 0, 0, 2] }, 
+                { text: "暗戀對象 (然後發現他喜歡別人)。", value: [1, -1, 2, 0] }, 
+                { text: "路邊的阿伯 (想知道樂透號碼)。", value: [0, 2, 3, 3] } 
+            ]
+        },
+        {
+            text: "Q8. 如果你要拍一支 YouTube 影片，主題會是？",
+            options: [
+                { text: "教大家如何用鼻孔吹直笛。", value: [3, 0, 1, 5] }, 
+                { text: "深度剖析股市崩盤與宇宙爆炸的關聯。", value: [-1, 5, 1, 1] }, 
+                { text: "整人企劃：把朋友的車子包成禮物。", value: [2, 2, 3, 3] }, 
+                { text: "直播睡覺 24 小時。", value: [1, -2, 0, 2] } 
+            ]
+        },
+        {
+            text: "Q9. 在路上遇到外星人問路，你會？",
+            options: [
+                { text: "亂指一通，騙他去警察局。", value: [1, 1, 4, 2] }, 
+                { text: "很熱情地帶路，順便問能不能去火星玩。", value: [4, 0, 0, 3] }, 
+                { text: "立刻裝死。", value: [-1, -1, 1, 2] }, 
+                { text: "把它抓起來賣給研究機構，發財囉！", value: [0, 3, 5, 1] } 
+            ]
+        },
+        {
+            text: "Q10. 最後一題，你覺得人生的意義是什麼？",
+            options: [
+                { text: "吃飽睡，睡飽吃，偶爾拉拉屎。", value: [2, -2, 0, 1] }, 
+                { text: "征服宇宙！讓所有人都跪下！", value: [1, 2, 4, 4] }, 
+                { text: "愛與和平...騙你的，是錢。", value: [0, 4, 5, 2] }, 
+                { text: "不要問我這麼難的問題！(翻桌)", value: [-1, -3, 0, 5] } 
+            ]
+        }
+    ];
+
+    let currentQuestion = 0;
+    let userStats = [5, 5, 5, 5]; 
+
+    function startQuiz() {
+        document.getElementById("start-screen").classList.add("hidden");
+        document.getElementById("quiz-screen").classList.remove("hidden");
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        if (currentQuestion >= questions.length) {
+            showResult();
+            return;
+        }
+
+        const q = questions[currentQuestion];
+        document.getElementById("question-text").innerText = q.text;
+        const optsDiv = document.getElementById("options-container");
+        optsDiv.innerHTML = "";
+        
+        document.getElementById("progress").style.width = ((currentQuestion / questions.length) * 100) + "%";
+
+        q.options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "btn";
+            btn.innerText = opt.text;
+            btn.onclick = () => {
+                for(let i=0; i<4; i++) userStats[i] += opt.value[i];
+                currentQuestion++;
+                loadQuestion();
+            };
+            optsDiv.appendChild(btn);
+        });
+    }
+
+    // 移除 Google Drive 邏輯，只返回路徑
+    function getDriveImage(url) {
+        return url; 
+    }
+
+    function showResult() {
+        document.getElementById("quiz-screen").classList.add("hidden");
+        document.getElementById("result-screen").classList.remove("hidden");
+
+        let minDiff = Infinity;
+        let bestChar = null;
+
+        characters.forEach(char => {
+            let diff = 0;
+            for(let i=0; i<4; i++) {
+                diff += Math.pow(char.stats[i] - userStats[i], 2);
+            }
+            if (diff < minDiff) {
+                minDiff = diff;
+                bestChar = char;
+            }
+        });
+
+        if (!bestChar && characters.length > 0) {
+            bestChar = characters[0]; // 保險措施
+        } else if (!bestChar) {
+             document.getElementById("result-name").innerText = "錯誤";
+             document.getElementById("result-desc").innerText = "角色資料遺失";
+             document.getElementById("result-image").src = "https://via.placeholder.com/200?text=Error";
+             return;
+        }
+
+        document.getElementById("result-name").innerText = bestChar.name;
+        document.getElementById("result-desc").innerText = bestChar.desc;
+        document.getElementById("result-image").src = getDriveImage(bestChar.image);
+        
+        const displayStats = userStats.map(s => Math.max(0, Math.min(10, s)));
+        document.getElementById("score-charm").innerText = displayStats[0];
+        document.getElementById("score-intellect").innerText = displayStats[1];
+        document.getElementById("score-scheming").innerText = displayStats[2];
+        document.getElementById("score-abnormal").innerText = displayStats[3];
+    }
+
+    // 截圖功能
+    function generateImage() {
+        const captureElement = document.getElementById("capture-area");
+        html2canvas(captureElement, {
+            useCORS: false, 
+            scale: 2,
+            backgroundColor: "#ffffff" 
+        }).then(canvas => {
+            const imgData = canvas.toDataURL("image/png");
+            const modal = document.getElementById("generated-image-container");
+            const finalImg = document.getElementById("final-image");
+            finalImg.src = imgData;
+            modal.style.display = "flex";
+        });
+    }
+
+    function closeImageModal() {
+        document.getElementById("generated-image-container").style.display = "none";
+    }
+</script>
+
+</body>
+</html>
