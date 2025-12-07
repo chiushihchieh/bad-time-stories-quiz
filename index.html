@@ -8,20 +8,20 @@
     <style>
         body {
             font-family: '微軟正黑體', sans-serif;
-            background-color: #ffd700;
+            background-color: #ffd700; /* 背景黃色 */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-            position: relative;
+            position: relative; /* 為了放置懸浮按鈕 */
         }
         .container {
             background-color: white;
             padding: 30px;
             border-radius: 20px;
-            box-shadow: 10px 10px 0px rgba(0,0,0,1);
+            box-shadow: 10px 10px 0px rgba(0,0,0,1); /* 黑色硬陰影，更美漫風格 */
             max-width: 500px;
             width: 100%;
             text-align: center;
@@ -30,6 +30,7 @@
         h1 { color: #000; margin-bottom: 5px; font-weight: 900; font-size: 28px; }
         .subtitle { color: #d32f2f; font-weight: bold; margin-bottom: 30px; font-size: 18px; }
         
+        /* 懸浮的 YouTube 按鈕 (移出主區塊) */
         .floating-yt-btn {
             position: fixed;
             bottom: 20px;
@@ -53,6 +54,7 @@
             background-color: #cc0000;
         }
 
+        /* 測驗選項按鈕 */
         .btn {
             background-color: #fff;
             color: #000;
@@ -82,6 +84,7 @@
 
         .hidden { display: none; }
         
+        /* 進度條 */
         .progress-bar {
             width: 100%;
             height: 15px;
@@ -98,6 +101,7 @@
             transition: width 0.3s ease;
         }
 
+        /* 結果區塊 (截圖範圍) */
         #capture-area {
             background: white;
             padding: 20px;
@@ -109,13 +113,13 @@
         .result-img {
             width: 200px;
             height: 200px;
-            object-fit: cover;
-            border-radius: 15px;
+            object-fit: contain; /* 改為 contain，確保圖片完整顯示 */
+            /* border-radius: 15px;  移除圓角 */
             border: 4px solid #000;
             margin: 15px auto;
             background-color: #eee;
         }
-        
+        /* 隱藏的數值區塊 */
         .stat-box {
             display: none; 
             background: #f9f9f9;
@@ -135,6 +139,7 @@
             margin: 10px 0;
         }
         
+        /* 圖片生成後的彈窗 */
         #generated-image-container {
             display: none;
             position: fixed;
@@ -175,7 +180,7 @@
     <p class="subtitle">測測看你在床編宇宙裡是誰！</p>
     
     <div style="margin: 30px 0;">
-        <img src="角色圖片/logo.png" alt="Quiz Logo" style="width:150px; height:150px; object-fit:cover; border-radius:50%; border:3px solid #000;">
+        <img src="角色圖片/logo.png" alt="Quiz Logo" style="width:150px; height:150px; object-fit:contain; border:3px solid #000;">
     </div>
     
     <button class="btn action-btn" onclick="startQuiz()">🔥 開始診斷 🔥</button>
