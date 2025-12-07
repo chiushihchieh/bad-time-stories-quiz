@@ -114,9 +114,11 @@
             width: 200px;
             height: 200px;
             object-fit: contain; /* 確保圖片完整顯示，不裁切 */
-            border: none; /* 【修改】完全移除邊框 */
+            border: 0 !important; /* 【強制】無邊框 */
+            outline: none !important; /* 【強制】無輪廓 */
+            box-shadow: none !important; /* 【強制】無陰影 */
             margin: 15px auto;
-            background-color: transparent; /* 【修改】移除背景色，變透明 */
+            background-color: transparent; /* 背景透明 */
         }
         /* 隱藏的數值區塊 */
         .stat-box {
@@ -153,7 +155,7 @@
         #generated-image-container img {
             max-width: 90%;
             max-height: 80%;
-            border: 5px solid white;
+            border: 5px solid white; /* 這裡保留截圖後彈窗的白框，比較好看 */
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
@@ -179,7 +181,7 @@
     <p class="subtitle">測測看你在床編宇宙裡是誰！</p>
     
     <div style="margin: 30px 0;">
-        <img src="角色圖片/logo.png" alt="Quiz Logo" style="width:150px; height:150px; object-fit:contain; border:3px solid #000; border-radius: 50%;">
+        <img src="角色圖片/logo.png" alt="Quiz Logo" style="width:150px; height:150px; object-fit:contain; border: none;">
     </div>
     
     <button class="btn action-btn" onclick="startQuiz()">🔥 開始診斷 🔥</button>
